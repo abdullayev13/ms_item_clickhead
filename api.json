@@ -1,0 +1,161 @@
+{
+  "api/auth": {
+    "chack-url": {
+      "req": {
+        "token": "string",
+        "url": "string"
+      },
+      "res": {
+        "ok": true,
+        "user_id": 1,
+        "message": "string"
+      }
+    },
+    "sign-up": {
+      "req": {
+        "name": "string",
+        "username": "string",
+        "password": "string"
+      },
+      "res": {
+        "user": {
+          "id": 1,
+          "name": "string",
+          "username": "string",
+          "password": "string"
+        },
+        "access_token": "string",
+        "refresh_token": "string"
+      }
+    },
+    "log-in": {
+      "req": {
+        "username": "string",
+        "password": "string"
+      },
+      "res": "same as sign-up"
+    },
+    "user/create": {
+      "req": {
+        "name": "string",
+        "username": "string",
+        "password": "string",
+        "role": "admin or user"
+      },
+      "res": {
+        "id": 1,
+        "name": "string",
+        "username": "string",
+        "password": "string",
+        "role": "admin or user"
+      }
+    },
+    "user/:id": {
+      "role": "admin",
+      "res": {
+        "id": 1,
+        "name": "string",
+        "username": "string"
+      }
+    },
+    "user-me": {
+      "res": {
+        "id": 1,
+        "name": "string",
+        "username": "string"
+      }
+    },
+    "user/list ? limit, offset, order": {
+      "role": "admin",
+      "res": {
+        "count": 100,
+        "users": [
+          {
+            "id": 1,
+            "name": "string",
+            "username": "string",
+            "role": "string"
+          }
+        ]
+      }
+    },
+    "user/update/:id": {
+      "role": "admin",
+      "req": "user fields...",
+      "res": {
+        "msg": "successfully updated"
+      }
+    },
+    "user-me/update": {
+      "req": "user fields... except 'role'",
+      "res": {
+        "msg": "successfully updated"
+      }
+    },
+    "user/delete/:id": {
+      "role": "admin",
+      "res": {
+        "msg": "successfully deleted"
+      }
+    },
+    "user-me/delete": {
+      "res": {
+        "msg": "successfully deleted"
+      }
+    }
+  },
+  "api/item": {
+    "create": {
+      "req": {
+        "name": "string",
+        "info": "string",
+        "price": 1
+      },
+      "res": {
+        "id": 1,
+        "name": "string",
+        "info": "string",
+        "price": 1
+      }
+    },
+    ":id": {
+      "res": {
+        "id": 1,
+        "name": "string",
+        "info": "string",
+        "price": 1
+      }
+    },
+    "list ? limit, offset, order": {
+      "res": {
+        "count": 100,
+        "users": [
+          {
+            "id": 1,
+            "name": "string",
+            "info": "string",
+            "price": 1
+          }
+        ]
+      }
+    },
+    "update/:id": {
+      "role": "admin",
+      "req": {
+        "name": "string",
+        "info": "string",
+        "price": 1
+      },
+      "res": {
+        "msg": "successfully updated"
+      }
+    },
+    "delete/:id": {
+      "role": "admin",
+      "res": {
+        "msg": "successfully deleted"
+      }
+    }
+  }
+}
+

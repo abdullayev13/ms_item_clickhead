@@ -1,0 +1,79 @@
+syntax = "proto3";
+
+package user_service;
+
+option go_package = "genproto/auth";
+
+service AuthService {
+  rpc CheckUrl(CheckUrlRequest) returns(CheckUrlResponse) {};
+  rpc Create(CreateUser) returns (UserLoginResponse) {};
+  rpc Login(UserLoginRequest) returns (UserLoginResponse) {};
+  rpc GetByID(UserPrimaryKey) returns (User) {};
+  rpc GetList(GetListUserRequest) returns (GetListUserResponse) {};
+  rpc Update(UpdateUser) returns (User) {};
+  rpc Delete(UserPrimaryKey) returns (MessageString) {};
+}
+
+message UserPrimaryKey {
+  int32 id = 1;
+}
+
+message User {
+  int32 id = 1;
+  string name = 2;
+  string role = 3;
+  string username = 4;
+}
+
+message CreateUser {
+  string name = 1;
+  string username = 2;
+  string password = 3;
+  string role = 4;      // "admin" or "user"
+  bool generateToken = 5;
+}
+
+message UserLoginRequest {
+  string username = 1;
+  string password = 2;
+}
+
+message UserLoginResponse {
+  User user = 1;
+  string access_token = 2;
+  string refresh_token = 3;
+}
+
+message GetListUserRequest {
+  int64 limit = 1;
+  int64 offset = 2;
+  string order = 3;
+}
+
+message GetListUserResponse {
+  int64 count = 1;
+  repeated User users = 2;
+}
+
+message UpdateUser {
+  int32 id = 1;
+  string name = 2;
+  string role = 3;
+  string username = 4;
+  string password = 5;
+}
+
+message CheckUrlRequest {
+  string token = 1;
+  string url = 2;
+}
+
+message CheckUrlResponse {
+  bool ok = 1;
+  int32 user_id = 2;
+  string message = 3;
+}
+
+message MessageString {
+  string message = 1;
+}

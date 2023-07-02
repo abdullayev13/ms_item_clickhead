@@ -1,0 +1,54 @@
+syntax = "proto3";
+
+package item;
+
+option go_package = "genproto/item";
+
+service ItemService {
+  rpc Create(CreateItem) returns (Item) {};
+  rpc GetByID(ItemPrimaryKey) returns (Item) {};
+  rpc GetList(GetListItemRequest) returns (GetListItemResponse) {};
+  rpc Update(UpdateItem) returns (Item) {};
+  rpc Delete(ItemPrimaryKey) returns (MessageString) {};
+}
+
+message ItemPrimaryKey {
+  int32 id = 1;
+}
+
+message Item {
+  int32 id = 1;
+  string name = 2;
+  string info = 3;
+  int64 price = 4;
+}
+
+
+
+message CreateItem {
+  string name = 1;
+  string info = 2;
+  int64 price = 3;
+}
+
+message UpdateItem {
+  int32 id = 1;
+  string name = 2;
+  string info = 3;
+  int64 price = 4;
+}
+
+message GetListItemRequest {
+  int64 limit = 1;
+  int64 offset = 2;
+  string order = 3;
+}
+
+message GetListItemResponse {
+  int64 count = 1;
+  repeated Item items = 2;
+}
+
+message MessageString {
+  string message = 1;
+}

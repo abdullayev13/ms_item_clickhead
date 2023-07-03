@@ -31,6 +31,7 @@ func (h *Handler) CheckUrl(ctx *gin.Context) {
 
 	if !res.Ok {
 		h.handleResponse(ctx, http.BadRequest, res.Message)
+		ctx.Abort()
 		return
 	}
 

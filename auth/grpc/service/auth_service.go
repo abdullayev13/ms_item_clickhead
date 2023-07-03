@@ -41,10 +41,10 @@ func (s *AuthService) CheckUri(ctx context.Context, req *auth.CheckUriRequest) (
 		if user.Role == "admin" {
 			ok = true
 		} else {
-			if strings.HasPrefix(req.Uri, "api/auth/user-me") {
+			if strings.HasPrefix(req.Uri, "/api/auth/user-me") {
 				ok = true
-			} else if strings.HasPrefix(req.Uri, "api/auth/product/item") {
-				suffix := req.Uri[len("api/auth/product/item"):]
+			} else if strings.HasPrefix(req.Uri, "/api/product/item") {
+				suffix := req.Uri[len("/api/product/item"):]
 				_, err = strconv.Atoi(suffix)
 				isNum := err == nil
 				if isNum || strings.HasPrefix(suffix, "list") {
@@ -53,8 +53,11 @@ func (s *AuthService) CheckUri(ctx context.Context, req *auth.CheckUriRequest) (
 			}
 		}
 	}
-
-	res := &auth.CheckUriResponse{Ok: ok, UserId: id}
+	msg := ""
+	if !ok {
+		msg = "permission denied"
+	}
+	res := &auth.CheckUriResponse{Ok: ok, UserId: id, Message: msg}
 	return res, nil
 }
 

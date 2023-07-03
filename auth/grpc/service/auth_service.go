@@ -39,7 +39,7 @@ func (s *AuthService) CheckUri(ctx context.Context, req *auth.CheckUriRequest) (
 		_ = role
 	}
 
-	res := &auth.CheckUriResponse{Ok: true}
+	res := &auth.CheckUriResponse{Ok: true, UserId: id}
 	return res, nil
 }
 

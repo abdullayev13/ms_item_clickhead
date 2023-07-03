@@ -73,7 +73,7 @@ func generateToken(id int32, secretKey string, expiringDuration time.Duration, t
 func parseClaims(token string, secretKey string) (*Claims, error) {
 	claims := new(Claims)
 	jwtToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
-		return secretKey, nil
+		return []byte(secretKey), nil
 	})
 	if err != nil {
 		return nil, err

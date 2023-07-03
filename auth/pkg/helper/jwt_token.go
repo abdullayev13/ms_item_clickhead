@@ -3,7 +3,6 @@ package helper
 import (
 	"errors"
 	"github.com/dgrijalva/jwt-go"
-	"strconv"
 	"time"
 )
 
@@ -35,32 +34,34 @@ func GenerateToken(id int32, secretKey string, accessExpiring, refreshExpiring t
 }
 
 func ParseAccessToken(token string, secretKey string) (int32, error) {
-	claims, id, err := parseClaims(token, secretKey)
+	claims, err := parseClaims(token, secretKey)
 	if err != nil {
 		return 0, err
 	}
 
-	if claims.Subject != access {
+	if claims.Type != access {
 		return 0, errors.New("it is not access_token")
 	}
 
-	return id, nil
+	return claims.Id, nil
 }
 
 func ParseToken(token string, secretKey string) (int32, error) {
-	_, id, err := parseClaims(token, secretKey)
-	return id, err
+	clams, err := parseClaims(token, secretKey)
+	return clams.Id, err
 }
 
-func generateToken(id int32, secretKey string, expiringDuration time.Duration, subject string) (string, error) {
-	claims := &jwt.StandardClaims{
-		Id:        strconv.Itoa(int(id)),
-		ExpiresAt: time.Now().Add(expiringDuration).Unix(),
-		Subject:   subject,
+func generateToken(id int32, secretKey string, expiringDuration time.Duration, type_ string) (string, error) {
+	claims := &Claims{
+		StandardClaims: &jwt.StandardClaims{
+			ExpiresAt: time.Now().Add(expiringDuration).Unix(),
+		},
+		Id:   id,
+		Type: type_,
 	}
 
 	tokenStr, err := jwt.NewWithClaims(jwt.SigningMethodHS256, claims).
-		SignedString(secretKey)
+		SignedString([]byte(secretKey))
 
 	if err != nil {
 		return "", err
@@ -69,23 +70,24 @@ func generateToken(id int32, secretKey string, expiringDuration time.Duration, s
 	return tokenStr, nil
 }
 
-func parseClaims(token string, secretKey string) (*jwt.StandardClaims, int32, error) {
-	claims := new(jwt.StandardClaims)
+func parseClaims(token string, secretKey string) (*Claims, error) {
+	claims := new(Claims)
 	jwtToken, err := jwt.ParseWithClaims(token, claims, func(token *jwt.Token) (interface{}, error) {
 		return secretKey, nil
 	})
 	if err != nil {
-		return nil, 0, err
+		return nil, err
 	}
 
 	if !jwtToken.Valid {
-		return nil, 0, errors.New("invalid token")
+		return nil, errors.New("invalid token")
 	}
 
-	id, err := strconv.Atoi(claims.Id)
-	if err != nil {
-		return nil, 0, errors.New("modified token")
-	}
+	return claims, err
+}
 
-	return claims, int32(id), err
+type Claims struct {
+	*jwt.StandardClaims
+	Id   int32
+	Type string
 }

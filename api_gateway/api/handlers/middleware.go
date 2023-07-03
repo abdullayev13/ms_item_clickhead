@@ -22,7 +22,7 @@ func (h *Handler) CheckUrl(ctx *gin.Context) {
 	}
 
 	res, err := h.services.AuthService().CheckUri(ctx.Request.Context(),
-		&auth.CheckUriRequest{Uri: uri, Token: token})
+		&auth.CheckUriRequest{Uri: uri, Token: token, Method: ctx.Request.Method})
 	if err != nil {
 		h.handleResponse(ctx, http.BadRequest, err.Error())
 		ctx.Abort()

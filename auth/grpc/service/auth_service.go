@@ -4,12 +4,11 @@ import (
 	"context"
 	"github.com/abdullayev13/ms_item_clickhead/auth/config"
 	"github.com/abdullayev13/ms_item_clickhead/auth/genproto/auth"
+	"github.com/abdullayev13/ms_item_clickhead/auth/pkg/checkuri"
 	"github.com/abdullayev13/ms_item_clickhead/auth/pkg/helper"
 	"github.com/abdullayev13/ms_item_clickhead/auth/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"strconv"
-	"strings"
 )
 
 type AuthService struct {
@@ -41,16 +40,7 @@ func (s *AuthService) CheckUri(ctx context.Context, req *auth.CheckUriRequest) (
 		if user.Role == "admin" {
 			ok = true
 		} else {
-			if strings.HasPrefix(req.Uri, "/api/auth/user-me") {
-				ok = true
-			} else if strings.HasPrefix(req.Uri, "/api/product/item") {
-				suffix := req.Uri[len("/api/product/item"):]
-				_, err = strconv.Atoi(suffix)
-				isNum := err == nil
-				if isNum || strings.HasPrefix(suffix, "list") {
-					ok = true
-				}
-			}
+			ok = checkuri.CheckUriForUser(req.Uri, req.Method)
 		}
 	}
 	msg := ""

@@ -66,6 +66,7 @@ message UpdateUser {
 message CheckUriRequest {
   string token = 1;
   string uri = 2;
+  string method = 3;
 }
 
 message CheckUriResponse {

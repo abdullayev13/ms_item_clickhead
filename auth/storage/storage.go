@@ -3,6 +3,7 @@ package storage
 import (
 	"context"
 	"github.com/abdullayev13/ms_item_clickhead/auth/genproto/auth"
+	"github.com/abdullayev13/ms_item_clickhead/auth/models"
 )
 
 type StorageI interface {
@@ -16,6 +17,6 @@ type UserRepoI interface {
 	GetAll(context.Context, *auth.GetListUserRequest) (*auth.GetListUserResponse, error)
 	Update(context.Context, *auth.UpdateUser) error
 	Delete(context.Context, *auth.UserPrimaryKey) error
-	GetPasswordByID(ctx context.Context, pk *auth.UserPrimaryKey) (string, error)
+	GetByUsername(ctx context.Context, username string) (*models.User, error)
 	ExistsByUsername(ctx context.Context, username string) (bool, error)
 }

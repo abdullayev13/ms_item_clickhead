@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/abdullayev13/ms_item_clickhead/auth/config"
 	"github.com/abdullayev13/ms_item_clickhead/auth/genproto/auth"
+	"github.com/abdullayev13/ms_item_clickhead/auth/pkg/helper"
 	"github.com/abdullayev13/ms_item_clickhead/auth/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -23,13 +24,53 @@ func NewUserService(cfg config.Config, strg storage.StorageI) *AuthService {
 }
 
 func (s *AuthService) CheckUrl(ctx context.Context, req *auth.CheckUrlRequest) (*auth.CheckUrlResponse, error) {
+	id, err := helper.ParseAccessToken(req.Token, s.cfg.TokenSecretKey)
+	if err != nil {
+		return nil, status.Error(codes.InvalidArgument, err.Error())
+	}
+
+	user, err := s.strg.User().GetByID(ctx, &auth.UserPrimaryKey{Id: id})
+	if err != nil {
+		return nil, status.Error(codes.NotFound, err.Error())
+	}
+
+	{
+		role := user.Role
+		_ = role
+	}
+
 	res := &auth.CheckUrlResponse{Ok: true}
 	return res, nil
 }
 
 func (s *AuthService) Login(ctx context.Context, req *auth.UserLoginRequest) (*auth.UserLoginResponse, error) {
+	user, err := s.strg.User().GetByUsername(ctx, req.Username)
+	if err != nil {
+		return nil, status.Errorf(codes.NotFound, err.Error())
+	}
 
-	return nil, status.Errorf(codes.Unimplemented, "method Login not implemented")
+	if user.Password != req.Password {
+		return nil, status.Errorf(codes.InvalidArgument, "username or password wrong")
+	}
+
+	token, err := helper.GenerateToken(user.Id, s.cfg.TokenSecretKey, s.cfg.AccessTokenExpiring, s.cfg.RefreshTokenExpiring)
+	if err != nil {
+		return nil, status.Errorf(codes.Internal, err.Error())
+	}
+
+	res := new(auth.UserLoginResponse)
+	{
+		res.AccessToken = token.AccessToken
+		res.RefreshToken = token.RefreshToken
+		res.User = &auth.User{
+			Id:       user.Id,
+			Name:     user.Name,
+			Username: user.Username,
+			Role:     user.Role,
+		}
+	}
+
+	return res, nil
 }
 
 func (s *AuthService) Create(ctx context.Context, req *auth.CreateUser) (*auth.UserLoginResponse, error) {
@@ -52,6 +93,16 @@ func (s *AuthService) Create(ctx context.Context, req *auth.CreateUser) (*auth.U
 	}
 
 	res := &auth.UserLoginResponse{User: user}
+
+	if req.GenerateToken {
+		token, err := helper.GenerateToken(user.Id, s.cfg.TokenSecretKey, s.cfg.AccessTokenExpiring, s.cfg.RefreshTokenExpiring)
+		if err != nil {
+			return nil, status.Errorf(codes.Internal, err.Error())
+		}
+
+		res.AccessToken = token.AccessToken
+		res.RefreshToken = token.RefreshToken
+	}
 
 	return res, nil
 }

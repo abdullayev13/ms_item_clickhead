@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"github.com/abdullayev13/ms_item_clickhead/auth/genproto/auth"
+	"github.com/abdullayev13/ms_item_clickhead/auth/models"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -115,16 +116,16 @@ func (r *userRepo) Delete(ctx context.Context, pk *auth.UserPrimaryKey) error {
 	return nil
 }
 
-func (r *userRepo) GetPasswordByID(ctx context.Context, pk *auth.UserPrimaryKey) (string, error) {
-	query := `SELECT password FROM users WHERE id = $1`
-	var password string
-	err := r.db.GetContext(ctx, &password, query, pk.Id)
+func (r *userRepo) GetByUsername(ctx context.Context, username string) (*models.User, error) {
+	query := `SELECT * FROM users WHERE username = $1`
+	user := new(models.User)
+	err := r.db.GetContext(ctx, user, query, username)
 
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
-	return password, nil
+	return user, nil
 }
 
 func (r *userRepo) ExistsByUsername(ctx context.Context, username string) (bool, error) {

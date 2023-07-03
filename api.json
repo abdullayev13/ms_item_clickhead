@@ -156,6 +156,13 @@
         "msg": "successfully deleted"
       }
     }
+  },
+  "api": {
+    "for users": [
+      "user-me/**",
+      "item/:id",
+      "item/list"
+    ]
   }
 }
 

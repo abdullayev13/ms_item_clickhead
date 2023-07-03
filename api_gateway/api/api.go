@@ -27,7 +27,7 @@ func SetUpAPI(r *gin.RouterGroup, h handlers.Handler, cfg config.Config) {
 		auth.PUT("/user/:id", h.UpdateUser)
 		auth.DELETE("/user/:id", h.DeleteUser)
 	}
-	//article
+	//item
 	r.POST("/article", h.CreateArticle)
 	r.GET("/article/:id", h.GetArticleById)
 	r.GET("/article", h.GetAllArticles)

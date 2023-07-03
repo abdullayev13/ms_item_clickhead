@@ -158,14 +158,14 @@ func (h *Handler) GetUserById(c *gin.Context) {
 func (h *Handler) GetAllUsers(c *gin.Context) {
 	req := new(auth.GetListUserRequest)
 	{
-		limit, err := strconv.Atoi(c.Query("limit"))
+		limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
 		if err != nil {
 			h.handleResponse(c, http.BadRequest, "limit must be number")
 			return
 		}
 		req.Limit = int64(limit)
 
-		offset, err := strconv.Atoi(c.Query("offset"))
+		offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
 		if err != nil {
 			h.handleResponse(c, http.BadRequest, "offset must be number")
 			return

@@ -15,11 +15,17 @@ func (h *Handler) CheckUrl(ctx *gin.Context) {
 	}
 
 	token := ctx.GetHeader("Authorization")
+	if token == "" {
+		h.handleResponse(ctx, http.BadRequest, "token not found!")
+		ctx.Abort()
+		return
+	}
 
 	res, err := h.services.AuthService().CheckUri(ctx.Request.Context(),
 		&auth.CheckUriRequest{Uri: uri, Token: token})
 	if err != nil {
 		h.handleResponse(ctx, http.BadRequest, err.Error())
+		ctx.Abort()
 		return
 	}
 

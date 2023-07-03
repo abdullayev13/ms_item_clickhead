@@ -92,7 +92,7 @@ func (r *itemRepo) Update(ctx context.Context, req *item.UpdateItem) error {
 				name=$1,
 				info=$2,
 				price=$3
-				WHERE id=$5`
+				WHERE id=$4`
 
 	_, err := r.db.QueryContext(ctx, query, req.Name, req.Info, req.Price, req.Id)
 	if err != nil {

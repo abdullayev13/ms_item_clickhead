@@ -1,160 +1,135 @@
 package handlers
 
 import (
+	"github.com/abdullayev13/ms_item_clickhead/api_gateway/api/http"
+	"github.com/abdullayev13/ms_item_clickhead/api_gateway/genproto/item"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 func (h *Handler) CreateArticle(c *gin.Context) {
-	/*
-			{
-			var article item.CreateArticle
+	req := new(item.CreateItem)
 
-			err := c.ShouldBindJSON(&article)
-			if err != nil {
-				h.handleResponse(c, http.BadRequest, err.Error())
-				return
-			}
+	err := c.ShouldBindJSON(req)
+	if err != nil {
+		h.handleResponse(c, http.BadRequest, "error on binding input: "+err.Error())
+		return
+	}
 
-			resp, err := h.services.ItemService().Create(
-				c.Request.Context(),
-				&article,
-			)
-			if err != nil {
-				h.handleResponse(c, http.GRPCError, err.Error())
-				return
-			}
+	resp, err := h.services.ItemService().Create(
+		c.Request.Context(),
+		req,
+	)
+	if err != nil {
+		h.handleResponse(c, http.GRPCError, err.Error())
+		return
+	}
 
-			h.handleResponse(c, http.Created, resp)
-		}
-	*/
+	h.handleResponse(c, http.Created, resp)
 }
 
 func (h *Handler) GetArticleById(c *gin.Context) {
-	/*
-			{
+	req := new(item.ItemPrimaryKey)
 
-			userId := c.Param("id")
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		h.handleResponse(c, http.BadRequest, "id must be number")
+		return
+	}
 
-			if !util.IsValidUUID(userId) {
-				h.handleResponse(c, http.InvalidArgument, "article id is an invalid uuid")
-				return
-			}
+	req.Id = int32(id)
 
-			resp, err := h.services.ItemService().GetByID(
-				context.Background(),
-				&item.ArticlePrimaryKey{
-					Id: userId,
-				},
-			)
-			if err != nil {
-				h.handleResponse(c, http.GRPCError, err.Error())
-				return
-			}
+	resp, err := h.services.ItemService().GetByID(
+		c.Request.Context(),
+		req,
+	)
+	if err != nil {
+		h.handleResponse(c, http.GRPCError, err.Error())
+		return
+	}
 
-			h.handleResponse(c, http.OK, resp)
-		}
-	*/
+	h.handleResponse(c, http.OK, resp)
 }
 
 func (h *Handler) GetAllArticles(c *gin.Context) {
-	/*
-			{
-			resp, err := h.services.ItemService().GetList(
-				c.Request.Context(),
-				&item.GetListArticleRequest{},
-			)
-
-			if err != nil {
-				h.handleResponse(c, http.GRPCError, err.Error())
-				return
-			}
-
-			h.handleResponse(c, http.OK, resp)
+	req := new(item.GetListItemRequest)
+	{
+		limit, err := strconv.Atoi(c.DefaultQuery("limit", "10"))
+		if err != nil {
+			h.handleResponse(c, http.BadRequest, "limit must be number")
+			return
 		}
-	*/
-}
+		req.Limit = int64(limit)
 
-func (h *Handler) DeleteArticle(c *gin.Context) {
-	/*
-			{
-			id := c.Param("id")
-
-			resp, err := h.services.ItemService().Delete(
-				c.Request.Context(),
-				&item.ArticlePrimaryKey{
-					Id: id,
-				},
-			)
-
-			if err != nil {
-				h.handleResponse(c, http.GRPCError, err.Error())
-				return
-			}
-
-			h.handleResponse(c, http.OK, resp)
+		offset, err := strconv.Atoi(c.DefaultQuery("offset", "0"))
+		if err != nil {
+			h.handleResponse(c, http.BadRequest, "offset must be number")
+			return
 		}
-	*/
+		req.Offset = int64(offset)
+
+		req.Order = c.Query("order")
+	}
+	resp, err := h.services.ItemService().GetList(
+		c.Request.Context(),
+		req,
+	)
+	if err != nil {
+		h.handleResponse(c, http.GRPCError, err.Error())
+		return
+	}
+
+	h.handleResponse(c, http.OK, resp)
 }
 
 func (h *Handler) UpdateArticle(c *gin.Context) {
-	/*
-			{
-			id := c.Param("id")
+	req := new(item.UpdateItem)
 
-			var article item.Article
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		h.handleResponse(c, http.BadRequest, "id must be number")
+		return
+	}
 
-			err := c.ShouldBindJSON(&article)
-			if err != nil {
-				h.handleResponse(c, http.BadRequest, err.Error())
-				return
-			}
+	err = c.ShouldBindJSON(req)
+	if err != nil {
+		h.handleResponse(c, http.BadRequest, "error on binding input: "+err.Error())
+		return
+	}
 
-			resp, err := h.services.ItemService().Update(
-				c.Request.Context(),
-				&item.UpdateArticle{
-					Id:          id,
-					Description: article.Description,
-					UserId:      article.UserId,
-				},
-			)
+	req.Id = int32(id)
 
-			if err != nil {
-				h.handleResponse(c, http.GRPCError, err.Error())
-				return
-			}
+	resp, err := h.services.ItemService().Update(
+		c.Request.Context(),
+		req,
+	)
+	if err != nil {
+		h.handleResponse(c, http.GRPCError, err.Error())
+		return
+	}
 
-			h.handleResponse(c, http.OK, resp)
-		}
-	*/
+	h.handleResponse(c, http.OK, resp)
 }
 
-func (h *Handler) PatchArticle(c *gin.Context) {
-	/*
-			{
-			id := c.Param("id")
+func (h *Handler) DeleteArticle(c *gin.Context) {
+	req := new(item.ItemPrimaryKey)
 
-			var article item.UpdatePatchArticle
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		h.handleResponse(c, http.BadRequest, "id must be number")
+		return
+	}
 
-			err := c.ShouldBindJSON(&article)
-			if err != nil {
-				h.handleResponse(c, http.BadRequest, err.Error())
-				return
-			}
+	req.Id = int32(id)
 
-			resp, err := h.services.ItemService().UpdatePatch(
-				c.Request.Context(),
-				&item.UpdatePatchArticle{
-					Id:     id,
-					Fields: article.Fields,
-				},
-			)
+	resp, err := h.services.ItemService().Delete(
+		c.Request.Context(),
+		req,
+	)
+	if err != nil {
+		h.handleResponse(c, http.GRPCError, err.Error())
+		return
+	}
 
-			if err != nil {
-				h.handleResponse(c, http.GRPCError, err.Error())
-				return
-			}
-
-			h.handleResponse(c, http.OK, resp)
-		}
-	*/
+	h.handleResponse(c, http.OK, resp)
 }

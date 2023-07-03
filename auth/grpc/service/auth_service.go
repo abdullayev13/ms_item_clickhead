@@ -8,6 +8,8 @@ import (
 	"github.com/abdullayev13/ms_item_clickhead/auth/storage"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
+	"strconv"
+	"strings"
 )
 
 type AuthService struct {
@@ -34,12 +36,25 @@ func (s *AuthService) CheckUri(ctx context.Context, req *auth.CheckUriRequest) (
 		return nil, status.Error(codes.NotFound, err.Error())
 	}
 
+	ok := false
 	{
-		role := user.Role
-		_ = role
+		if user.Role == "admin" {
+			ok = true
+		} else {
+			if strings.HasPrefix(req.Uri, "api/auth/user-me") {
+				ok = true
+			} else if strings.HasPrefix(req.Uri, "api/auth/product/item") {
+				suffix := req.Uri[len("api/auth/product/item"):]
+				_, err = strconv.Atoi(suffix)
+				isNum := err == nil
+				if isNum || strings.HasPrefix(suffix, "list") {
+					ok = true
+				}
+			}
+		}
 	}
 
-	res := &auth.CheckUriResponse{Ok: true, UserId: id}
+	res := &auth.CheckUriResponse{Ok: ok, UserId: id}
 	return res, nil
 }
 

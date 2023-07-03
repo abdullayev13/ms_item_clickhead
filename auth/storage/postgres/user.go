@@ -129,7 +129,7 @@ func (r *userRepo) GetByUsername(ctx context.Context, username string) (*models.
 }
 
 func (r *userRepo) ExistsByUsername(ctx context.Context, username string) (bool, error) {
-	query := `SELECT count(id) FROM users WHERE id = $1`
+	query := `SELECT count(id) FROM users WHERE username = $1`
 	count := 0
 	err := r.db.GetContext(ctx, &count, query, username)
 

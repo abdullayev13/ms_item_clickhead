@@ -5,7 +5,7 @@ package user_service;
 option go_package = "genproto/auth";
 
 service AuthService {
-  rpc CheckUrl(CheckUrlRequest) returns(CheckUrlResponse) {};
+  rpc CheckUri(CheckUriRequest) returns(CheckUriResponse) {};
   rpc Create(CreateUser) returns (UserLoginResponse) {};
   rpc Login(UserLoginRequest) returns (UserLoginResponse) {};
   rpc GetByID(UserPrimaryKey) returns (User) {};
@@ -63,12 +63,12 @@ message UpdateUser {
   string password = 5;
 }
 
-message CheckUrlRequest {
+message CheckUriRequest {
   string token = 1;
-  string url = 2;
+  string uri = 2;
 }
 
-message CheckUrlResponse {
+message CheckUriResponse {
   bool ok = 1;
   int32 user_id = 2;
   string message = 3;

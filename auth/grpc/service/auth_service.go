@@ -23,7 +23,7 @@ func NewUserService(cfg config.Config, strg storage.StorageI) *AuthService {
 	}
 }
 
-func (s *AuthService) CheckUrl(ctx context.Context, req *auth.CheckUrlRequest) (*auth.CheckUrlResponse, error) {
+func (s *AuthService) CheckUri(ctx context.Context, req *auth.CheckUriRequest) (*auth.CheckUriResponse, error) {
 	id, err := helper.ParseAccessToken(req.Token, s.cfg.TokenSecretKey)
 	if err != nil {
 		return nil, status.Error(codes.InvalidArgument, err.Error())
@@ -39,7 +39,7 @@ func (s *AuthService) CheckUrl(ctx context.Context, req *auth.CheckUrlRequest) (
 		_ = role
 	}
 
-	res := &auth.CheckUrlResponse{Ok: true}
+	res := &auth.CheckUriResponse{Ok: true}
 	return res, nil
 }
 
